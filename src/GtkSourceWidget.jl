@@ -22,10 +22,10 @@ const MutableGtkTextIter = Gtk.GLib.MutableTypes.Mutable{GtkTextIter}
 mutable(it::GtkTextIter) = Gtk.GLib.MutableTypes.mutable(it)
 
 if Gtk.gtk_version == 3
-    @static if is_windows()
+    @static if Sys.iswindows()
         const libgtksourceview = Pkg.dir() * "/GtkSourceWidget/bin/libgtksourceview-3.0-1.dll"
     end
-    @static if is_linux()
+    @static if Sys.islinux()
         try
             strip(readstring(pipeline(`ldconfig -p`, `grep libgtksourceview-3`, `cut -d'>' -f2`)))
         catch
@@ -33,7 +33,7 @@ if Gtk.gtk_version == 3
         end
         const libgtksourceview = strip(readstring(pipeline(`ldconfig -p`, `grep libgtksourceview-3`, `cut -d'>' -f2`, `head -1`)))
 	end
-    @static if is_apple()
+    @static if Sys.isapple()
         if !isfile( Pkg.dir() * "/Homebrew/deps/usr/lib/libgtksourceview-3.0.dylib" )
             using Homebrew
             Homebrew.add("gtksourceview3")
@@ -331,7 +331,7 @@ source_view_get_gutter(view::GtkSourceView) =  ccall((:gtk_source_view_get_gutte
 ### GtkSourceMap
 
 function _define_source_map()
-    if is_linux()
+    if Sys.islinux()
         return :(
             global const SOURCE_MAP = false
         )
